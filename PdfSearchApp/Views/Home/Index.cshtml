@@ -1,0 +1,71 @@
+﻿@using PdfSearchApp.Services
+@using static PdfSearchApp.Services.AzureSearchService
+@{
+    ViewData["Title"] = "PDF Search";
+}
+
+<!-- Main container -->
+<div class="container">
+    <div class="row">
+        <!-- Upload Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <h4>Upload PDF</h4>
+                <form enctype="multipart/form-data" method="post" action="/search/upload">
+                    <input type="file" name="file" required />
+                    <button type="submit">Upload and Index</button>
+                </form>
+                <!-- Display Upload Message -->
+                @if (ViewData["UploadMessage"] != null)
+                {
+                    <div style="margin-top: 10px; padding: 10px; color: green; border: 1px solid #ddd; background-color: #f4f4f4;">
+                        @ViewData["UploadMessage"]
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="col-md-6">
+            <div class="card">
+                <h4>Search PDFs</h4>
+                <form method="get" action="/search">
+                    <input type="text" name="query" placeholder="Search PDFs..." required />
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Display Search Results -->
+    @if (ViewData["Results"] != null)
+    {
+        var results = (IEnumerable<SearchResult>)ViewData["Results"];
+
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <h4>Search Results</h4>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Title</th>
+                                <th scope="col">Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var result in results)
+                            {
+                                <tr>
+                                    <td>@(result.Title ?? "Untitled Document")</td>
+                                    <td><button onclick="window.open('@(Uri.EscapeUriString(result.Url))', '_blank')">View PDF</button></td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
